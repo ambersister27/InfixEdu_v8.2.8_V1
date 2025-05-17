@@ -57,22 +57,29 @@ class MarkStudentsAbsentDailyCommand extends Command
 
         foreach ($activeStudentRecords as $studentRecord) {
             try {
-                SmStudentAttendance::updateOrCreate(
-                    [
+                // Check if an attendance record already exists for today
+                $existingAttendance = SmStudentAttendance::where('student_id', $studentRecord->student_id)
+                    ->where('attendance_date', $today->toDateString())
+                    ->where('student_record_id', $studentRecord->id)
+                    ->where('academic_id', $studentRecord->academic_id)
+                    ->where('school_id', $studentRecord->school_id)
+                    ->first();
+
+                if (!$existingAttendance) {
+                    // Only mark as Absent if no record exists for today
+                    SmStudentAttendance::create([
                         'student_id' => $studentRecord->student_id,
                         'attendance_date' => $today->toDateString(),
                         'student_record_id' => $studentRecord->id,
                         'academic_id' => $studentRecord->academic_id,
-                        'school_id' => $studentRecord->school_id
-                    ],
-                    [
+                        'school_id' => $studentRecord->school_id,
                         'attendance_type' => 'A', // Mark as Absent
                         'notes' => 'Defaulted to Absent',
                         'class_id' => $studentRecord->class_id,
                         'section_id' => $studentRecord->section_id,
-                    ]
-                );
-                $markedAbsentCount++;
+                    ]);
+                    $markedAbsentCount++;
+                }
             } catch (\Exception $e) {
                 $this->error('Failed to mark student_id: ' . $studentRecord->student_id . ' (record_id: ' . $studentRecord->id . ') as Absent. Error: ' . $e->getMessage());
                 Log::error('Command attendance:mark-absent-daily: Error for student_id: ' . $studentRecord->student_id . ' - ' . $e->getMessage());
