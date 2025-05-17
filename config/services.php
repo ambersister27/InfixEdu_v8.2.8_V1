@@ -64,4 +64,7 @@ return [
         // Enables incremental scopes (useful if in the future we need access to another type of data).
         'include_granted_scopes' => true,
     ],
+    'tipsoi' => [
+        'api_token' => env('TIPSOI_API_TOKEN', 'D8dd-cfbf-fa81-e1b8-54ee-fbbe-cb7a-8026-48d7-1653-4942-f499-6b04-a0b9-89c9-7309'),
+    ],
 ];

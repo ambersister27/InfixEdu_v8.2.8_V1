@@ -10,6 +10,10 @@ use Modules\University\Console\PaymentReminder;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\QrcodeAttendnceAbsenseCommand;
+use App\Console\Commands\SyncTipsoiCurrentDayCommand;
+use App\Console\Commands\SyncTipsoiMissingDaysCommand;
+use App\Console\Commands\MarkStudentsAbsentDailyCommand;
+
 class Kernel extends ConsoleKernel
 {
     public function __construct(Application $app, Dispatcher $events)
@@ -33,6 +37,9 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\DemoCron::class,
         QrcodeAttendnceAbsenseCommand::class,
+        SyncTipsoiCurrentDayCommand::class,
+        SyncTipsoiMissingDaysCommand::class,
+        MarkStudentsAbsentDailyCommand::class,
     ];
 
 
@@ -68,7 +75,9 @@ class Kernel extends ConsoleKernel
             if (moduleStatusCheck("QRCodeAttendance") == true) {
                 $schedule->command('qrcode:attendance')->everyOddHour()->withoutOverlapping();
             }
-           
+            $schedule->command('tipsoi:sync-current-day')->everyMinute();
+            $schedule->command('tipsoi:sync-missing-days')->dailyAt('02:00');
+            $schedule->command('attendance:mark-absent-daily')->dailyAt('00:05');
         }
     }
 
