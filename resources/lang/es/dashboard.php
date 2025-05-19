@@ -23,6 +23,8 @@ return [
 "application" => "Solicitud",
 
 "student_admitted_message" => "Mensaje admitido por el estudiante",
+"class_attendance_summary" => "Resumen de Asistencia por Clase",
+"no_attendance_data_available" => "No hay datos de asistencia disponibles",
 
 "student_admission_progress" => "Admisión Estudiantil En Curso",
 

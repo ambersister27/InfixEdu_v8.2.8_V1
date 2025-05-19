@@ -49,6 +49,25 @@
         .chart_container p{
             font-size: 13px
         }
+        .class-attendance-list {
+            list-style: none;
+            padding: 0;
+        }
+        .class-attendance-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .class-attendance-list li:last-child {
+            border-bottom: none;
+        }
+        .class-name {
+            font-weight: bold;
+        }
+        .attendance-percentage {
+            color: #007bff;
+        }
     </style>
 @endpush
 
@@ -467,6 +486,49 @@
         </div>
 
         <div class="col-md-6 mt-50-md md_infix_50">
+            @if (userPermission('class-attendance-overview'))
+            <section>
+                <div class="container-fluid p-0">
+                    <div class="white-box">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="main-title">
+                                    <h3 class="mb-15">@lang('dashboard.class_attendance_overview')</h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <ul class="class-attendance-list">
+                                    {{-- Dummy Data - Replace with actual data from controller --}}
+                                    @php
+                                        $classAttendances = [
+                                            ['class_name' => 'Class One', 'attendance_percentage' => 95],
+                                            ['class_name' => 'Class Two', 'attendance_percentage' => 88],
+                                            ['class_name' => 'Class Three', 'attendance_percentage' => 92],
+                                            ['class_name' => 'Class Four', 'attendance_percentage' => 85],
+                                            ['class_name' => 'Class Five', 'attendance_percentage' => 90],
+                                        ];
+                                        // Sort by attendance percentage, low to high
+                                        usort($classAttendances, function($a, $b) {
+                                            return $a['attendance_percentage'] <=> $b['attendance_percentage'];
+                                        });
+                                    @endphp
+                                    @foreach ($classAttendances as $attendance)
+                                        <li>
+                                            <span class="class-name">{{ $attendance['class_name'] }}</span>
+                                            <span class="attendance-percentage">{{ $attendance['attendance_percentage'] }}%</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            @endif
+        </div>
+
+
+        <div class="col-md-6 mt-50-md md_infix_50">
             <div class="modal fade admin-query" id="add_to_do">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -705,6 +767,35 @@
     {{-- Dashboard Secound Graph End  --}}
 
 
+    <section class="mt-20">
+        <div class="container-fluid p-0">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="main-title">
+                        <h3 class="mb-30">@lang('dashboard.class_attendance_summary')</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="white-box">
+                        @if (isset($classAttendanceData) && count($classAttendanceData) > 0)
+                            <ul class="class-attendance-list">
+                                @foreach ($classAttendanceData as $attendance)
+                                    <li>
+                                        <span class="class-name">{{ $attendance['class_name'] }}</span>
+                                        <span class="attendance-percentage">{{ $attendance['attendance_percentage'] }}%</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>@lang('dashboard.no_attendance_data_available')</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 @endsection
 @include('backEnd.partials.date_picker_css_js')
 @include('backEnd.communicate.academic_calendar_css_js')
